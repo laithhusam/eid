@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>جولة عيد الأضحى 🌙</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo','Segoe UI',sans-serif;background:#0b2016;color:#fdf8f0;min-height:100vh;padding-bottom:60px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.15}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.f1{animation:float 3s ease-in-out infinite}
+.f2{animation:float 3s ease-in-out .5s infinite}
+.f3{animation:float 3s ease-in-out 1s infinite}
+.spinning{animation:spin .9s linear infinite;display:inline-block}
+.alarm-bell{animation:shake .45s ease-in-out infinite}
+.alarm-pulse{animation:pulse .6s ease-in-out infinite}
+.fade{animation:fadeIn .25s ease}
+.wrap{max-width:480px;margin:0 auto;padding:0 15px}
+
+/* Setup screen */
+.setup{max-width:460px;margin:40px auto;padding:0 16px}
+.setup-card{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:18px;padding:24px}
+.setup h2{color:#c9a84c;font-size:18px;margin-bottom:6px}
+.setup .desc{font-size:13px;color:rgba(253,248,240,.5);margin-bottom:20px;line-height:1.7}
+.step{display:flex;gap:12px;margin-bottom:16px;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);color:#c9a84c;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-txt{font-size:13px;color:rgba(253,248,240,.75);line-height:1.65}
+.step-txt a{color:#c9a84c}
+.step-txt code{background:rgba(255,255,255,.08);padding:2px 7px;border-radius:5px;font-size:12px;direction:ltr;display:inline-block}
+.key-inp{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.3);border-radius:10px;padding:11px 14px;font-family:'Cairo',monospace;font-size:13px;color:#fdf8f0;outline:none;margin-top:6px;direction:ltr}
+.key-inp:focus{border-color:rgba(201,168,76,.6)}
+.save-btn{width:100%;margin-top:14px;padding:13px;border-radius:11px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#e8c96d);color:#0b2016;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900}
+.err-msg{font-size:12px;color:#f44336;margin-top:8px;text-align:center;display:none}
+
+/* Main app */
+.header{text-align:center;padding:24px 0 16px}
+.moons{display:flex;justify-content:center;gap:14px;margin-bottom:8px;font-size:24px}
+.app-title{font-size:20px;font-weight:900;color:#c9a84c;letter-spacing:.5px}
+.app-sub{font-size:11px;color:rgba(253,248,240,.38);margin-top:3px}
+
+.link-card{background:rgba(76,175,80,.07);border:1px solid rgba(76,175,80,.22);border-radius:12px;padding:12px 14px;margin-bottom:13px}
+.link-lbl{font-size:11px;color:rgba(76,175,80,.8);margin-bottom:6px}
+.link-row{display:flex;gap:7px;align-items:center}
+.link-box{flex:1;background:rgba(0,0,0,.25);border:1px solid rgba(76,175,80,.18);border-radius:8px;padding:7px 10px;font-size:11px;color:rgba(253,248,240,.65);word-break:break-all;direction:ltr;line-height:1.4}
+.copy-btn{flex-shrink:0;background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.28);border-radius:8px;padding:7px 12px;color:#81c784;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+
+.sync-bar{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:7px 13px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sync-info{font-size:11px;color:rgba(253,248,240,.33);line-height:1.5}
+.sync-info span{color:rgba(201,168,76,.7)}
+.sync-btn{background:transparent;border:1px solid rgba(201,168,76,.22);border-radius:7px;padding:4px 11px;color:rgba(201,168,76,.75);font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px}
+.sync-btn:disabled{opacity:.4;cursor:not-allowed}
+
+.prog{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.17);border-radius:14px;padding:15px 17px;margin-bottom:14px}
+.stats{display:flex;justify-content:space-around;margin-bottom:11px}
+.stat-v{font-size:25px;font-weight:900;line-height:1;text-align:center}
+.stat-l{font-size:10px;color:rgba(253,248,240,.42);margin-top:2px;text-align:center}
+.bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.bar-f{height:100%;background:linear-gradient(90deg,#c9a84c,#e8c96d);border-radius:3px;transition:width .5s}
+.eta{font-size:11px;color:rgba(253,248,240,.38);text-align:center;margin-top:8px}
+
+.timer-card{background:rgba(6,18,10,.97);border:1px solid rgba(201,168,76,.33);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+.timer-name{font-size:15px;font-weight:700;color:#c9a84c;margin-bottom:11px}
+.ring-wrap{position:relative;display:inline-block}
+.ring-wrap svg{transform:rotate(-90deg)}
+.timer-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;font-weight:900;font-family:'Cairo',sans-serif}
+.alarm-area{margin-top:9px}
+.alarm-row{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px}
+.stop-alarm-btn{background:#c62828;border:none;border-radius:9px;padding:9px 22px;color:#fff;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:block;margin:0 auto}
+.timer-acts{display:flex;gap:8px;justify-content:center;margin-top:11px;flex-wrap:wrap}
+
+.sec-title{font-size:10px;font-weight:700;color:rgba(253,248,240,.3);letter-spacing:2px;margin-bottom:8px;padding-right:2px}
+.house{border-radius:12px;padding:10px 11px;margin-bottom:7px;display:flex;align-items:center;gap:8px;transition:opacity .3s}
+.house.done{opacity:.42}
+.badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.hname{font-size:13px;font-weight:700;color:#fdf8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hname.linked{cursor:pointer}
+.hname.linked:hover{color:#c9a84c}
+.hname.struck{text-decoration:line-through}
+.acts{display:flex;gap:3px;flex-shrink:0}
+.ico{width:25px;height:25px;border-radius:6px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.05);color:rgba(253,248,240,.5);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ico:hover{background:rgba(255,255,255,.12)}
+.ico.dim{opacity:.2;cursor:not-allowed}
+.ico.red{color:rgba(244,100,100,.6)}
+.visit-btn{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.22);color:#c9a84c;padding:4px 8px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+
+.form-box{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.17);border-radius:12px;padding:13px;margin-bottom:8px}
+.inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:8px 12px;font-family:'Cairo',sans-serif;font-size:13px;color:#fdf8f0;outline:none;margin-bottom:6px;-webkit-appearance:none}
+.inp:focus{border-color:rgba(201,168,76,.45)}
+.inp.ltr{direction:ltr;font-size:12px}
+textarea.inp{resize:vertical}
+.form-acts{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.bulk-lnk{background:transparent;border:none;color:rgba(201,168,76,.55);font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer}
+
+.btn-gold{padding:8px 15px;border-radius:9px;border:none;cursor:pointer;background:linear-gradient(135deg,#c9a84c,#e8c96d);color:#0b2016;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700}
+.btn-out{padding:8px 13px;border-radius:9px;cursor:pointer;background:transparent;border:1px solid rgba(201,168,76,.28);color:rgba(253,248,240,.6);font-family:'Cairo',sans-serif;font-size:12px}
+.btn-del{padding:8px 14px;border-radius:9px;cursor:pointer;background:transparent;border:1px solid rgba(244,100,100,.18);color:rgba(244,100,100,.5);font-family:'Cairo',sans-serif;font-size:12px}
+.bottom-btns{display:flex;gap:8px;justify-content:center;margin-top:13px;flex-wrap:wrap}
+.empty{text-align:center;padding:42px 20px;color:rgba(253,248,240,.26)}
+.empty .icon{font-size:44px;margin-bottom:11px}
+.empty p{font-size:13px;line-height:1.8}
+
+/* change-key btn */
+.change-key{background:transparent;border:none;color:rgba(253,248,240,.2);font-family:'Cairo',sans-serif;font-size:10px;cursor:pointer;position:fixed;bottom:10px;left:50%;transform:translateX(-50%)}
+.change-key:hover{color:rgba(253,248,240,.5)}
+</style>
+</head>
+<body>
+
+<!-- ══ شاشة الإعداد ══ -->
+<div id="setup-screen" style="display:none">
+  <div class="setup">
+    <div style="text-align:center;padding:30px 0 20px">
+      <div style="font-size:36px;margin-bottom:10px">🌙</div>
+      <div style="font-size:20px;font-weight:900;color:#c9a84c">جولة عيد الأضحى المبارك</div>
+    </div>
+    <div class="setup-card">
+      <h2>🔑 إعداد المزامنة (مرة واحدة فقط)</h2>
+      <div class="desc">
+        نحتاج مفتاح مجاني من <strong style="color:#c9a84c">jsonbin.io</strong> عشان البيانات تتزامن على جميع الأجهزة.
+        التسجيل ببريد إلكتروني فقط — لا يحتاج حساب Google.
+      </div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-txt">
+          افتح <a href="https://jsonbin.io" target="_blank"><strong>jsonbin.io</strong></a>
+          واضغط <strong>Sign Up</strong> — سجّل ببريدك الإلكتروني
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-txt">
+          بعد تسجيل الدخول افتح القائمة العلوية ← اختر <strong>API Keys</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-txt">
+          اضغط <strong>+ CREATE API KEY</strong> — سمّه أي اسم ← اضغط <strong>Create</strong>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-txt">
+          انسخ المفتاح الظاهر (يبدأ بـ <code>$2b$</code>) والصقه هنا:
+          <input id="api-key-input" class="key-inp" placeholder="$2b$10$..." autocomplete="off" spellcheck="false"/>
+        </div>
+      </div>
+
+      <button class="save-btn" onclick="saveApiKey()">✓ حفظ وبدء الجولة</button>
+      <div class="err-msg" id="err-msg">تعذّر الاتصال — تأكد من المفتاح وأعد المحاولة</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ التطبيق الرئيسي ══ -->
+<div id="app-screen" style="display:none">
+  <div class="wrap">
+    <div class="header">
+      <div class="moons">
+        <span class="f1">🌙</span><span class="f2" style="font-size:18px">⭐</span><span class="f3">🌙</span>
+      </div>
+      <div class="app-title">جولة عيد الأضحى المبارك</div>
+      <div class="app-sub">تقبّل الله منا ومنكم صالح الأعمال</div>
+    </div>
+
+    <!-- الرابط المشترك -->
+    <div class="link-card">
+      <div class="link-lbl">🔗 شارك هذا الرابط — يفتح على أي جهاز وأي شبكة</div>
+      <div class="link-row">
+        <div class="link-box" id="share-url">جارٍ التحضير...</div>
+        <button class="copy-btn" onclick="copyLink()">📋 نسخ</button>
+      </div>
+    </div>
+
+    <!-- شريط المزامنة -->
+    <div class="sync-bar">
+      <div class="sync-info">آخر مزامنة: <span id="last-sync">--</span></div>
+      <button class="sync-btn" id="sync-btn" onclick="manualSync()">
+        <span id="sync-icon">↻</span> تحديث
+      </button>
+    </div>
+
+    <!-- التقدم -->
+    <div class="prog" id="prog" style="display:none">
+      <div class="stats">
+        <div><div class="stat-v" id="s-done" style="color:#4caf50">0</div><div class="stat-l">منجزة</div></div>
+        <div><div class="stat-v" id="s-rem"  style="color:#c9a84c">0</div><div class="stat-l">متبقية</div></div>
+        <div><div class="stat-v" id="s-tot"  style="color:rgba(253,248,240,.5)">0</div><div class="stat-l">الإجمالي</div></div>
+      </div>
+      <div class="bar"><div class="bar-f" id="bar-f" style="width:0%"></div></div>
+      <div class="eta" id="eta"></div>
+    </div>
+
+    <!-- المؤقت -->
+    <div class="timer-card fade" id="timer-card" style="display:none">
+      <div class="timer-name" id="timer-name"></div>
+      <div class="ring-wrap">
+        <svg width="112" height="112">
+          <circle cx="56" cy="56" r="46" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="7"/>
+          <circle id="ring" cx="56" cy="56" r="46" fill="none" stroke="#4caf50" stroke-width="7"
+            stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="0"
+            style="transition:stroke-dashoffset 1s linear,stroke .4s"/>
+        </svg>
+        <div class="timer-num" id="timer-num" style="color:#4caf50">15:00</div>
+      </div>
+      <div class="alarm-area" id="alarm-area" style="display:none">
+        <div class="alarm-row">
+          <span class="alarm-bell" style="font-size:20px">🔔</span>
+          <span class="alarm-pulse" style="font-size:14px;font-weight:700;color:#f44336">انتهى وقت الزيارة!</span>
+        </div>
+        <button class="stop-alarm-btn" onclick="stopAlarm()">🔕 إيقاف الرنّة</button>
+      </div>
+      <div class="timer-acts">
+        <button class="btn-gold" onclick="completeVisit()">✓ انتهت الزيارة</button>
+        <button class="btn-out" id="cancel-btn" onclick="cancelVisit()">إلغاء</button>
+      </div>
+    </div>
+
+    <div class="sec-title" id="sec-title" style="display:none">ترتيب مسار الجولة</div>
+    <div class="empty" id="empty"><div class="icon">🏘️</div><p>لم تُضَف بيوت بعد<br>ابدأ بإضافة بيوت جولتك أدناه</p></div>
+    <div id="list"></div>
+
+    <!-- نموذج الإضافة -->
+    <div class="form-box fade" id="add-form" style="display:none">
+      <input id="inp-name" class="inp" placeholder="اسم صاحب البيت" onkeydown="if(event.key==='Enter')addHouse()"/>
+      <input id="inp-map"  class="inp ltr" placeholder="رابط الموقع على Google Maps (اختياري)"/>
+      <div class="form-acts">
+        <button class="bulk-lnk" onclick="showBulk()">إضافة جماعية</button>
+        <button class="btn-gold" onclick="addHouse()">إضافة</button>
+        <button class="btn-out"  onclick="hideAdd()">إلغاء</button>
+      </div>
+    </div>
+
+    <div class="form-box fade" id="bulk-form" style="display:none">
+      <div style="font-size:12px;color:rgba(253,248,240,.45);margin-bottom:7px">اكتب اسمًا واحدًا في كل سطر</div>
+      <textarea id="bulk-txt" class="inp" rows="8" placeholder="بيت أبو محمد&#10;بيت أبو أحمد&#10;بيت أبو خالد&#10;..."></textarea>
+      <div class="form-acts">
+        <button class="btn-gold" onclick="bulkImport()">استيراد</button>
+        <button class="btn-out"  onclick="hideBulk()">إلغاء</button>
+      </div>
+    </div>
+
+    <div class="bottom-btns">
+      <button class="btn-out" onclick="showAdd()">+ إضافة بيت</button>
+      <button class="btn-del" id="reset-btn" onclick="resetAll()" style="display:none">↺ إعادة تعيين</button>
+    </div>
+  </div>
+  <button class="change-key" onclick="changeKey()">⚙ تغيير مفتاح API</button>
+</div>
+
+<script>
+/* ════════════════════════════════════
+   الثوابت
+════════════════════════════════════ */
+const BINAPI  = 'https://api.jsonbin.io/v3/b';
+const CIRC    = 2 * Math.PI * 46;
+const DUR     = 15 * 60;
+const LS_KEY  = 'eid_api_key';
+const LS_BIN  = 'eid_bin_id';
+const POLL_MS = 8000;
+
+/* ════════════════════════════════════
+   الحالة
+════════════════════════════════════ */
+let apiKey    = localStorage.getItem(LS_KEY) || '';
+let binId     = localStorage.getItem(LS_BIN) || '';
+let houses    = [];
+let completed = new Set();
+let editingId = null;
+let activeId  = null;
+let timerSecs = DUR;
+let timerInt  = null;
+let alarmInt  = null;
+let audioCtx  = null;
+let polling   = false;
+let lastEtag  = '';
+
+/* ════════════════════════════════════
+   الإعداد
+════════════════════════════════════ */
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const urlBin = params.get('bin');
+  const urlKey = params.get('key');
+
+  // إذا جاء المفتاح في الرابط احفظه واستخدمه مباشرة
+  if (urlKey) { apiKey = urlKey; localStorage.setItem(LS_KEY, apiKey); }
+  if (urlBin) { binId  = urlBin; localStorage.setItem(LS_BIN, binId);  }
+
+  if (!apiKey) { showSetup(); return; }
+  startApp();
+});
+
+function showSetup() {
+  document.getElementById('setup-screen').style.display = 'block';
+  document.getElementById('app-screen').style.display   = 'none';
+}
+
+async function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('$2a$') && !key.startsWith('$2b$')) {
+    showErr('المفتاح يجب أن يبدأ بـ $2b$');
+    return;
+  }
+  apiKey = key;
+  localStorage.setItem(LS_KEY, apiKey);
+  const btn = document.querySelector('.save-btn');
+  btn.textContent = 'جارٍ التحقق...';
+  btn.disabled = true;
+  const ok = await initBin();
+  if (!ok) {
+    showErr('تعذّر الاتصال — تأكد من المفتاح');
+    btn.textContent = '✓ حفظ وبدء الجولة';
+    btn.disabled = false;
+    return;
+  }
+  startApp();
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function changeKey() {
+  localStorage.removeItem(LS_KEY);
+  localStorage.removeItem(LS_BIN);
+  location.reload();
+}
+
+/* ════════════════════════════════════
+   JSONBin API
+════════════════════════════════════ */
+function headers(extra) {
+  return { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, ...extra };
+}
+
+async function initBin() {
+  // إذا عندنا bin ID — لا ننشئ جديداً أبداً، فقط نتحقق منه
+  if (binId) {
+    try {
+      const r = await fetch(`${BINAPI}/${binId}/latest`, { headers: headers() });
+      if (r.ok) return true;
+      // فشل الاتصال — نرجع true على أمل أن يشتغل لاحقاً (لا ننشئ جديداً)
+      return true;
+    } catch { return true; }
+  }
+  // لا يوجد bin — أنشئ واحداً لأول مرة فقط
+  try {
+    const r = await fetch(BINAPI, {
+      method: 'POST',
+      headers: headers({ 'X-Bin-Name': 'eid-visits', 'X-Bin-Private': 'false' }),
+      body: JSON.stringify({ houses: [], completed: [] })
+    });
+    if (!r.ok) return false;
+    const d = await r.json();
+    binId = d.metadata.id;
+    localStorage.setItem(LS_BIN, binId);
+    return true;
+  } catch { return false; }
+}
+
+async function readBin() {
+  const r = await fetch(`${BINAPI}/${binId}/latest`, { headers: headers() });
+  if (!r.ok) return null;
+  const d = await r.json();
+  const etag = r.headers.get('ETag') || '';
+  return { data: d.record, etag };
+}
+
+async function writeBin(payload) {
+  await fetch(`${BINAPI}/${binId}`, {
+    method: 'PUT',
+    headers: headers(),
+    body: JSON.stringify(payload)
+  });
+}
+
+/* ════════════════════════════════════
+   بدء التطبيق
+════════════════════════════════════ */
+async function startApp() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display   = 'block';
+
+  if (!binId) await initBin();
+
+  setShareUrl();
+  await pull();
+  setInterval(poll, POLL_MS);
+}
+
+function setShareUrl() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('bin', binId);
+  url.searchParams.set('key', apiKey);
+  document.getElementById('share-url').textContent = url.toString();
+}
+
+/* ════════════════════════════════════
+   المزامنة
+════════════════════════════════════ */
+async function pull() {
+  try {
+    const res = await readBin();
+    if (!res) return;
+    if (res.etag && res.etag === lastEtag) { setSync(); return; }
+    lastEtag  = res.etag;
+    houses    = res.data.houses    || [];
+    completed = new Set(res.data.completed || []);
+    setSync();
+    render();
+  } catch {}
+}
+
+async function poll() {
+  if (polling) return;
+  polling = true;
+  await pull();
+  polling = false;
+}
+
+async function push() {
+  lastEtag = ''; // force re-read after write
+  await writeBin({ houses, completed: [...completed] });
+  setSync();
+}
+
+async function manualSync() {
+  const btn = document.getElementById('sync-btn');
+  const ico = document.getElementById('sync-icon');
+  ico.classList.add('spinning');
+  btn.disabled = true;
+  await pull();
+  ico.classList.remove('spinning');
+  btn.disabled = false;
+}
+
+function setSync() {
+  const d  = new Date();
+  const hh = d.getHours().toString().padStart(2,'0');
+  const mm = d.getMinutes().toString().padStart(2,'0');
+  const ss = d.getSeconds().toString().padStart(2,'0');
+  document.getElementById('last-sync').textContent = `${hh}:${mm}:${ss}`;
+}
+
+async function copyLink() {
+  const url = document.getElementById('share-url').textContent;
+  try { await navigator.clipboard.writeText(url); }
+  catch { prompt('انسخ الرابط:', url); return; }
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = '✅ تم النسخ';
+  setTimeout(() => btn.textContent = '📋 نسخ', 2200);
+}
+
+/* ════════════════════════════════════
+   المؤقت
+════════════════════════════════════ */
+function startVisit(id) {
+  stopAlarm();
+  activeId  = id;
+  timerSecs = DUR;
+  clearInterval(timerInt);
+  timerInt = setInterval(tick, 1000);
+  const h = houses.find(x => x.id === id);
+  document.getElementById('timer-name').textContent = 'زيارة: ' + (h ? h.name : '');
+  document.getElementById('timer-card').style.display   = 'block';
+  document.getElementById('alarm-area').style.display   = 'none';
+  document.getElementById('cancel-btn').style.display   = 'inline-block';
+  updateRing(); render();
+}
+
+function tick() {
+  if (--timerSecs <= 0) { timerSecs = 0; clearInterval(timerInt); startAlarm(); }
+  updateRing();
+}
+
+function updateRing() {
+  const pct   = timerSecs / DUR;
+  const color = timerSecs > 300 ? '#4caf50' : timerSecs > 120 ? '#ff9800' : '#f44336';
+  const m = Math.floor(timerSecs/60).toString().padStart(2,'0');
+  const s = (timerSecs%60).toString().padStart(2,'0');
+  document.getElementById('ring').setAttribute('stroke-dashoffset', CIRC - pct * CIRC);
+  document.getElementById('ring').setAttribute('stroke', color);
+  document.getElementById('timer-num').textContent  = m+':'+s;
+  document.getElementById('timer-num').style.color  = color;
+}
+
+/* ════════════════════════════════════
+   الرنّة — تستمر حتى الضغط
+════════════════════════════════════ */
+function beep() {
+  try {
+    if (!audioCtx || audioCtx.state === 'closed')
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    [660, 784, 880].forEach((f, i) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.frequency.value = f; o.type = 'sine';
+      const t = audioCtx.currentTime + i * 0.22;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.26, t + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      o.start(t); o.stop(t + 0.18);
+    });
+  } catch {}
+}
+
+function startAlarm() {
+  document.getElementById('alarm-area').style.display = 'block';
+  document.getElementById('cancel-btn').style.display = 'none';
+  beep();
+  alarmInt = setInterval(beep, 2200);
+}
+
+function stopAlarm() {
+  clearInterval(alarmInt);
+  document.getElementById('alarm-area').style.display = 'none';
+  document.getElementById('cancel-btn').style.display = 'inline-block';
+}
+
+function completeVisit() {
+  if (activeId) { completed.add(activeId); push(); }
+  cancelVisit();
+}
+
+function cancelVisit() {
+  clearInterval(timerInt); stopAlarm();
+  activeId = null; timerSecs = DUR;
+  document.getElementById('timer-card').style.display = 'none';
+  render();
+}
+
+/* ════════════════════════════════════
+   إجراءات البيوت
+════════════════════════════════════ */
+function toggleDone(id) {
+  if (completed.has(id)) completed.delete(id); else completed.add(id);
+  if (activeId === id) cancelVisit();
+  push(); render();
+}
+function moveHouse(i, dir) {
+  const to = i + dir;
+  if (to < 0 || to >= houses.length) return;
+  [houses[i], houses[to]] = [houses[to], houses[i]];
+  push(); render();
+}
+function deleteHouse(id) {
+  houses = houses.filter(h => h.id !== id);
+  completed.delete(id);
+  if (activeId === id) cancelVisit();
+  push(); render();
+}
+function addHouse() {
+  const name = document.getElementById('inp-name').value.trim();
+  const mapUrl = document.getElementById('inp-map').value.trim();
+  if (!name) return;
+  houses.push({ id: Date.now(), name, mapUrl });
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-map').value  = '';
+  hideAdd(); push(); render();
+}
+function saveEdit(id) {
+  const name   = document.getElementById('edit-name').value.trim();
+  const mapUrl = document.getElementById('edit-map').value.trim();
+  if (!name) return;
+  houses = houses.map(h => h.id === id ? {...h, name, mapUrl} : h);
+  editingId = null; push(); render();
+}
+function bulkImport() {
+  const lines = document.getElementById('bulk-txt').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  if (!lines.length) return;
+  lines.forEach((name, i) => houses.push({ id: Date.now()+i, name, mapUrl:'' }));
+  document.getElementById('bulk-txt').value = '';
+  hideBulk(); push(); render();
+}
+function resetAll() {
+  if (!confirm('إعادة تعيين جميع الزيارات؟')) return;
+  completed.clear(); push(); render();
+}
+
+/* ════════════════════════════════════
+   النماذج
+════════════════════════════════════ */
+function showAdd()  { document.getElementById('add-form').style.display='block'; document.getElementById('bulk-form').style.display='none'; editingId=null; render(); setTimeout(()=>document.getElementById('inp-name').focus(),50); }
+function hideAdd()  { document.getElementById('add-form').style.display='none'; document.getElementById('inp-name').value=''; document.getElementById('inp-map').value=''; }
+function showBulk() { document.getElementById('add-form').style.display='none'; document.getElementById('bulk-form').style.display='block'; setTimeout(()=>document.getElementById('bulk-txt').focus(),50); }
+function hideBulk() { document.getElementById('bulk-form').style.display='none'; document.getElementById('bulk-txt').value=''; }
+
+/* ════════════════════════════════════
+   الرسم
+════════════════════════════════════ */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function render() {
+  const total = houses.length, done = completed.size, rem = total - done;
+  document.getElementById('prog').style.display      = total > 0 ? 'block' : 'none';
+  document.getElementById('sec-title').style.display = total > 0 ? 'block' : 'none';
+  document.getElementById('empty').style.display     = total === 0 ? 'block' : 'none';
+  document.getElementById('reset-btn').style.display = done  > 0 ? 'inline-block' : 'none';
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-rem').textContent  = rem;
+  document.getElementById('s-tot').textContent  = total;
+  document.getElementById('bar-f').style.width  = total > 0 ? (done/total*100)+'%' : '0%';
+  const etaH = Math.floor(rem*15/60), etaM = (rem*15)%60;
+  document.getElementById('eta').innerHTML = rem > 0
+    ? `⏱ الوقت التقديري: ${etaH>0?etaH+' ساعة و ':''}${etaM} دقيقة`
+    : '<span style="color:#81c784">✅ اكتملت جميع الزيارات! كل عام وأنتم بخير</span>';
+
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  houses.forEach((h, i) => {
+    const isDone = completed.has(h.id), isActive = activeId === h.id;
+    if (editingId === h.id) {
+      const b = document.createElement('div');
+      b.className = 'form-box fade';
+      b.innerHTML = `<input id="edit-name" class="inp" value="${esc(h.name)}" placeholder="اسم صاحب البيت"/>
+        <input id="edit-map" class="inp ltr" value="${esc(h.mapUrl||'')}" placeholder="رابط Google Maps (اختياري)"/>
+        <div class="form-acts">
+          <button class="btn-gold" onclick="saveEdit(${h.id})">حفظ</button>
+          <button class="btn-out" onclick="editingId=null;render()">إلغاء</button>
+        </div>`;
+      list.appendChild(b);
+      setTimeout(()=>document.getElementById('edit-name')?.focus(),40);
+      return;
+    }
+    const card = document.createElement('div');
+    card.className = 'house' + (isDone?' done':'');
+    card.style.cssText = `background:${isActive?'rgba(201,168,76,.07)':'rgba(255,255,255,.04)'};border:1px solid ${isActive?'rgba(201,168,76,.45)':'rgba(255,255,255,.07)'}`;
+    const nc = isDone?'#81c784':'#c9a84c', nb = isDone?'rgba(76,175,80,.18)':'rgba(201,168,76,.12)', nbd = isDone?'rgba(76,175,80,.4)':'rgba(201,168,76,.28)';
+    card.innerHTML = `
+      <div class="badge" style="background:${nb};border:1px solid ${nbd};color:${nc}">${isDone?'✓':i+1}</div>
+      <div style="flex:1;min-width:0">
+        <div class="hname ${h.mapUrl?'linked':''} ${isDone?'struck':''}"
+          onclick="${h.mapUrl?`window.open('${esc(h.mapUrl)}','_blank')`:'void(0)'}">
+          ${esc(h.name)}${h.mapUrl?' 📍':''}
+        </div>
+      </div>
+      <div class="acts">
+        ${!isDone&&!isActive?`<button class="visit-btn" onclick="startVisit(${h.id})">⏱ ابدأ</button>`:''}
+        <div class="ico ${i===0?'dim':''}" onclick="${i>0?`moveHouse(${i},-1)`:''}" >▲</div>
+        <div class="ico ${i===houses.length-1?'dim':''}" onclick="${i<houses.length-1?`moveHouse(${i},1)`:''}" >▼</div>
+        <div class="ico" onclick="toggleDone(${h.id})">${isDone?'↩':'✓'}</div>
+        <div class="ico" onclick="editingId=${h.id};render()">✎</div>
+        <div class="ico red" onclick="deleteHouse(${h.id})">✕</div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+</script>
+</body>
+</html>
